@@ -62,7 +62,7 @@ function Sidebar() {
                 width: 52
               }}
             >
-              <Logo />
+              {/* <Logo /> */}
             </Box>
           </Box>
           <Divider
@@ -74,7 +74,7 @@ function Sidebar() {
           />
           <SidebarMenu />
         </Scrollbar>
-        <Divider
+        {/* <Divider
           sx={{
             background: theme.colors.alpha.trueWhite[10]
           }}
@@ -91,7 +91,7 @@ function Sidebar() {
           >
             Upgrade to PRO
           </Button>
-        </Box>
+        </Box> */}
       </SidebarWrapper>
       <Drawer
         sx={{

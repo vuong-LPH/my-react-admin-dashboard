@@ -36,6 +36,27 @@ const UserProfile = Loader(
 const UserSettings = Loader(
   lazy(() => import('src/content/applications/Users/settings'))
 );
+const User = Loader(
+  lazy(() => import('src/content/applications/User'))
+);
+const Payment = Loader(
+  lazy(() => import('src/content/applications/Payment'))
+);
+const Product = Loader(
+  lazy(() => import('src/content/applications/Product'))
+);
+const Services = Loader(
+  lazy(() => import('src/content/applications/Services'))
+);
+const Transaction = Loader(
+  lazy(() => import('src/content/applications/Transaction'))
+);
+const Vendor = Loader(
+  lazy(() => import('src/content/applications/Vendor'))
+);
+const Voucher = Loader(
+  lazy(() => import('src/content/applications/Voucher'))
+);
 
 // Components
 
@@ -83,12 +104,20 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '/',
-        element: <Overview />
+        element: <SidebarLayout />,
+        children: [
+          {
+            path: '',
+            // element: <Navigate to="crypto" replace />
+            element: <Crypto />
+          },
+        ]
       },
-      {
-        path: 'overview',
-        element: <Navigate to="/" replace />
-      },
+      // {
+      //   path: '/',
+      //   // element: <Navigate to="/" replace />
+      //   element: <Navigate to="crypto" replace />
+      // },
       {
         path: 'status',
         children: [
@@ -129,13 +158,41 @@ const routes: RouteObject[] = [
         element: <Navigate to="crypto" replace />
       },
       {
-        path: 'crypto',
+        path: 'dashboard',
         element: <Crypto />
       },
       {
-        path: 'messenger',
-        element: <Messenger />
-      }
+        path: 'user',
+        element: <User />
+      },
+      {
+        path: 'service',
+        element: <Services />
+      },
+      {
+        path: 'voucher',
+        element: <Voucher />
+      },
+      {
+        path: 'vendor',
+        element: <Vendor />
+      },
+      {
+        path: 'product',
+        element: <Product />
+      },
+      {
+        path: 'transaction',
+        element: <Transaction />
+      },
+      {
+        path: 'payment',
+        element: <Payment />
+      },
+      // {
+      //   path: 'messenger',
+      //   element: <Messenger />
+      // }
     ]
   },
   {
@@ -169,52 +226,52 @@ const routes: RouteObject[] = [
       }
     ]
   },
-  {
-    path: '/components',
-    element: <SidebarLayout />,
-    children: [
-      {
-        path: '',
-        element: <Navigate to="buttons" replace />
-      },
-      {
-        path: 'buttons',
-        element: <Buttons />
-      },
-      {
-        path: 'modals',
-        element: <Modals />
-      },
-      {
-        path: 'accordions',
-        element: <Accordions />
-      },
-      {
-        path: 'tabs',
-        element: <Tabs />
-      },
-      {
-        path: 'badges',
-        element: <Badges />
-      },
-      {
-        path: 'tooltips',
-        element: <Tooltips />
-      },
-      {
-        path: 'avatars',
-        element: <Avatars />
-      },
-      {
-        path: 'cards',
-        element: <Cards />
-      },
-      {
-        path: 'forms',
-        element: <Forms />
-      }
-    ]
-  }
+  // {
+  //   path: '/components',
+  //   element: <SidebarLayout />,
+  //   children: [
+  //     {
+  //       path: '',
+  //       element: <Navigate to="buttons" replace />
+  //     },
+  //     {
+  //       path: 'buttons',
+  //       element: <Buttons />
+  //     },
+  //     {
+  //       path: 'modals',
+  //       element: <Modals />
+  //     },
+  //     {
+  //       path: 'accordions',
+  //       element: <Accordions />
+  //     },
+  //     {
+  //       path: 'tabs',
+  //       element: <Tabs />
+  //     },
+  //     {
+  //       path: 'badges',
+  //       element: <Badges />
+  //     },
+  //     {
+  //       path: 'tooltips',
+  //       element: <Tooltips />
+  //     },
+  //     {
+  //       path: 'avatars',
+  //       element: <Avatars />
+  //     },
+  //     {
+  //       path: 'cards',
+  //       element: <Cards />
+  //     },
+  //     {
+  //       path: 'forms',
+  //       element: <Forms />
+  //     }
+  //   ]
+  // }
 ];
 
 export default routes;

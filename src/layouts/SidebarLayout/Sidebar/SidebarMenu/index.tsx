@@ -12,25 +12,17 @@ import {
 import { NavLink as RouterLink } from 'react-router-dom';
 import { SidebarContext } from 'src/contexts/SidebarContext';
 
-import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
-import BrightnessLowTwoToneIcon from '@mui/icons-material/BrightnessLowTwoTone';
-import MmsTwoToneIcon from '@mui/icons-material/MmsTwoTone';
-import TableChartTwoToneIcon from '@mui/icons-material/TableChartTwoTone';
-import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
-import BallotTwoToneIcon from '@mui/icons-material/BallotTwoTone';
-import BeachAccessTwoToneIcon from '@mui/icons-material/BeachAccessTwoTone';
-import EmojiEventsTwoToneIcon from '@mui/icons-material/EmojiEventsTwoTone';
-import FilterVintageTwoToneIcon from '@mui/icons-material/FilterVintageTwoTone';
-import HowToVoteTwoToneIcon from '@mui/icons-material/HowToVoteTwoTone';
-import LocalPharmacyTwoToneIcon from '@mui/icons-material/LocalPharmacyTwoTone';
-import RedeemTwoToneIcon from '@mui/icons-material/RedeemTwoTone';
-import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
-import TrafficTwoToneIcon from '@mui/icons-material/TrafficTwoTone';
-import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
-import ChromeReaderModeTwoToneIcon from '@mui/icons-material/ChromeReaderModeTwoTone';
-import WorkspacePremiumTwoToneIcon from '@mui/icons-material/WorkspacePremiumTwoTone';
-import CameraFrontTwoToneIcon from '@mui/icons-material/CameraFrontTwoTone';
 import DisplaySettingsTwoToneIcon from '@mui/icons-material/DisplaySettingsTwoTone';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PeopleIcon from '@mui/icons-material/People';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import DryCleaningIcon from '@mui/icons-material/DryCleaning';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import StoreIcon from '@mui/icons-material/Store';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import PaymentIcon from '@mui/icons-material/Payment';
+import TableChartTwoToneIcon from '@mui/icons-material/TableChartTwoTone';
 
 const MenuWrapper = styled(Box)(
   ({ theme }) => `
@@ -180,8 +172,8 @@ function SidebarMenu() {
   return (
     <>
       <MenuWrapper>
-        <List component="div">
-          <SubMenuWrapper>
+        {/* <List component="div"> */}
+          {/* <SubMenuWrapper>
             <List component="div">
               <ListItem component="div">
                 <Button
@@ -195,13 +187,13 @@ function SidebarMenu() {
                 </Button>
               </ListItem>
             </List>
-          </SubMenuWrapper>
-        </List>
+          </SubMenuWrapper> */}
+        {/* </List> */}
         <List
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Dashboards
+              Main Navigation
             </ListSubheader>
           }
         >
@@ -212,10 +204,10 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/dashboards/crypto"
-                  startIcon={<BrightnessLowTwoToneIcon />}
+                  to="/dashboards/dashboard"
+                  startIcon={<DashboardIcon />}
                 >
-                  Cryptocurrency
+                  Dashboard
                 </Button>
               </ListItem>
               <ListItem component="div">
@@ -223,10 +215,76 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/dashboards/messenger"
-                  startIcon={<MmsTwoToneIcon />}
+                  to="/dashboards/user"
+                  startIcon={<PeopleIcon />}
                 >
-                  Messenger
+                  Users
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dashboards/service"
+                  startIcon={<DryCleaningIcon />}
+                >
+                  Services
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dashboards/voucher"
+                  startIcon={<CardGiftcardIcon />}
+                >
+                  Vouchers
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dashboards/vendor"
+                  startIcon={<StoreIcon />}
+                >
+                  Vendors
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dashboards/product"
+                  startIcon={<InventoryIcon />}
+                >
+                  Products
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dashboards/transaction"
+                  startIcon={<ReceiptLongIcon />}
+                >
+                  Transactions
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dashboards/payment"
+                  startIcon={<PaymentIcon />}
+                >
+                  Payment Methods
                 </Button>
               </ListItem>
             </List>
@@ -260,13 +318,13 @@ function SidebarMenu() {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Accounts
+              User
             </ListSubheader>
           }
         >
           <SubMenuWrapper>
             <List component="div">
-              <ListItem component="div">
+              {/* <ListItem component="div">
                 <Button
                   disableRipple
                   component={RouterLink}
@@ -276,7 +334,7 @@ function SidebarMenu() {
                 >
                   User Profile
                 </Button>
-              </ListItem>
+              </ListItem> */}
               <ListItem component="div">
                 <Button
                   disableRipple
@@ -288,18 +346,29 @@ function SidebarMenu() {
                   Account Settings
                 </Button>
               </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/management/profile/details"
+                  startIcon={<LogoutIcon />}
+                >
+                  Log out
+                </Button>
+              </ListItem>
             </List>
           </SubMenuWrapper>
         </List>
-        <List
+        {/* <List
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
               Components
             </ListSubheader>
           }
-        >
-          <SubMenuWrapper>
+        > */}
+          {/* <SubMenuWrapper>
             <List component="div">
               <ListItem component="div">
                 <Button
@@ -401,17 +470,17 @@ function SidebarMenu() {
                 </Button>
               </ListItem>
             </List>
-          </SubMenuWrapper>
-        </List>
-        <List
+          </SubMenuWrapper> */}
+        {/* </List> */}
+        {/* <List
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
               Extra Pages
             </ListSubheader>
           }
-        >
-          <SubMenuWrapper>
+        > */}
+          {/* <SubMenuWrapper>
             <List component="div">
               <ListItem component="div">
                 <Button
@@ -458,8 +527,8 @@ function SidebarMenu() {
                 </Button>
               </ListItem>
             </List>
-          </SubMenuWrapper>
-        </List>
+          </SubMenuWrapper> */}
+        {/* </List> */}
       </MenuWrapper>
     </>
   );
