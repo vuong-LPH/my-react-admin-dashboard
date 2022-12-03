@@ -5,8 +5,15 @@ import { Grid, Container } from '@mui/material';
 import Footer from 'src/components/Footer';
 
 import Vouchers from './Vouchers';
+import { useGetAllVoucherQuery } from 'src/generated';
 
 function ApplicationsVoucher() {
+  const { data, loading } = useGetAllVoucherQuery({
+    variables: { status: true }
+  });
+
+  if (loading) return <div>Loading...</div>;
+  console.log({data})
   return (
     <>
       <Helmet>
@@ -24,7 +31,7 @@ function ApplicationsVoucher() {
           spacing={3}
         >
           <Grid item xs={12}>
-            <Vouchers />
+            {data && <Vouchers vouchers={data.laundry_service_voucher}/>}
           </Grid>
         </Grid>
       </Container>

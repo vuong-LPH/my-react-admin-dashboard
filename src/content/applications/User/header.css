@@ -1,0 +1,14 @@
+.space {
+    width: 10px;
+    height: auto;
+    display: inline-block;
+}
+
+.title {
+    text-align: center;
+}
+
+.space1{
+    height: 30px;
+    display: inline-block;
+}

@@ -22,97 +22,78 @@ import {
   MenuItem,
   Typography,
   useTheme,
-  CardHeader
+  CardHeader,
+  // Modal,
+  Button
 } from '@mui/material';
 
 import Label from 'src/components/Label';
-import { User, UserStatus } from 'src/models/user';
+// import { User, UserStatus } from 'src/models/user';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import BulkActions from './BulkActions';
+import { Customer } from './Users';
+import React from 'react';
+import {
+  useDelCustomerMutation,
+  useUpdateCustomerMutation
+} from 'src/generated';
+import { number } from 'yup/lib/locale';
+import { useNavigate } from 'react-router-dom';
+import { Modal } from 'react-bootstrap';
+import { confirmAlert } from 'react-confirm-alert';
+// import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { render } from 'react-dom';
 
 interface UsersTableProps {
   className?: string;
-  Users: User[];
+  customers: Customer[];
 }
 
 interface Filters {
-  status?: UserStatus;
+  status?: boolean;
 }
 
-const getStatusLabel = (UserStatus: UserStatus): JSX.Element => {
-  const map = {
-    failed: {
-      text: 'Failed',
-      color: 'error'
-    },
-    completed: {
-      text: 'Completed',
-      color: 'success'
-    },
-    pending: {
-      text: 'Pending',
-      color: 'warning'
-    }
-  };
-
-  const { text, color }: any = map[UserStatus];
-
-  return <Label color={color}>{text}</Label>;
+const getStatusLabel = (UserStatus: boolean): JSX.Element => {
+  const { text, color } = UserStatus
+    ? {
+        text: 'Still active',
+        color: 'success'
+      }
+    : {
+        text: 'Banned',
+        color: 'error'
+      };
+  return <label color={color}>{text}</label>;
 };
 
-const applyFilters = (
-  Users: User[],
-  filters: Filters
-): User[] => {
-  return Users.filter((User) => {
+const applyFilters = (Users: Customer[], filters: Filters): Customer[] => {
+  return Users.filter((Customer) => {
     let matches = true;
 
-    if (filters.status && User.status !== filters.status) {
-      matches = false;
-    }
+    // if (filters.status && User.status !== filters.status) {
+    //   matches = false;
+    // }
 
     return matches;
   });
 };
 
 const applyPagination = (
-  Users: User[],
+  Users: Customer[],
   page: number,
   limit: number
-): User[] => {
+): Customer[] => {
   return Users.slice(page * limit, page * limit + limit);
 };
 
-const UsersTable: FC<UsersTableProps> = ({ Users }) => {
-  const [selectedUsers, setSelectedUsers] = useState<string[]>(
-    []
-  );
-  const selectedBulkActions = selectedUsers.length > 0;
+const UsersTable: FC<UsersTableProps> = ({ customers }) => {
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(5);
+  const [limit, setLimit] = useState<number>(9999);
   const [filters, setFilters] = useState<Filters>({
     status: null
   });
-
-  const statusOptions = [
-    {
-      id: 'all',
-      name: 'All'
-    },
-    {
-      id: 'completed',
-      name: 'Completed'
-    },
-    {
-      id: 'pending',
-      name: 'Pending'
-    },
-    {
-      id: 'failed',
-      name: 'Failed'
-    }
-  ];
 
   const handleStatusChange = (e: ChangeEvent<HTMLInputElement>): void => {
     let value = null;
@@ -127,29 +108,27 @@ const UsersTable: FC<UsersTableProps> = ({ Users }) => {
     }));
   };
 
-  const handleSelectAllUsers = (
-    event: ChangeEvent<HTMLInputElement>
-  ): void => {
-    setSelectedUsers(
-      event.target.checked
-        ? Users.map((User) => User.id)
-        : []
-    );
+  const handleSelectAllUsers = (event: ChangeEvent<HTMLInputElement>): void => {
+    // setSelectedUsers(
+    //   event.target.checked
+    //     ? Users.map((Customer) => User.id)
+    //     : []
+    // );
   };
 
   const handleSelectOneUser = (
     event: ChangeEvent<HTMLInputElement>,
-    UserId: string
+    UserId: number
   ): void => {
     if (!selectedUsers.includes(UserId)) {
-      setSelectedUsers((prevSelected) => [
-        ...prevSelected,
-        UserId
-      ]);
+      // setSelectedUsers((prevSelected) => [
+      //   ...prevSelected,
+      //   UserId
+      // ]);
     } else {
-      setSelectedUsers((prevSelected) =>
-        prevSelected.filter((id) => id !== UserId)
-      );
+      // setSelectedUsers((prevSelected) =>
+      //   prevSelected.filter((id) => id !== UserId)
+      // );
     }
   };
 
@@ -161,63 +140,31 @@ const UsersTable: FC<UsersTableProps> = ({ Users }) => {
     setLimit(parseInt(event.target.value));
   };
 
-  const filteredUsers = applyFilters(Users, filters);
-  const paginatedUsers = applyPagination(
-    filteredUsers,
-    page,
-    limit
-  );
+  const filteredUsers = applyFilters(customers, filters);
+  const paginatedUsers = applyPagination(filteredUsers, page, limit);
   const selectedSomeUsers =
-    selectedUsers.length > 0 &&
-    selectedUsers.length < Users.length;
-  const selectedAllUsers =
-    selectedUsers.length === Users.length;
+    selectedUsers.length > 0 && selectedUsers.length < customers.length;
+  const selectedAllUsers = selectedUsers.length === customers.length;
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Card>
-      {selectedBulkActions && (
-        <Box flex={1} p={2}>
-          <BulkActions /> {/* sau khi click chon tat ca thi moi thay duoc chuc nang cua bulkAction */}
-        </Box>
-      )} 
-      {!selectedBulkActions && (
-        <CardHeader
-          action={
-            <Box width={150}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={filters.status || 'all'}
-                  onChange={handleStatusChange}
-                  label="Status"
-                  autoWidth
-                >
-                  {statusOptions.map((statusOption) => (
-                    <MenuItem key={statusOption.id} value={statusOption.id}>
-                      {statusOption.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          }
-          title="Users"
-        />
-      )}
+        <CardHeader action={<Box width={150}></Box>} title="Customers" />
       <Divider />
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox">
+              {/* <TableCell padding="checkbox">
                 <Checkbox
                   color="primary"
                   checked={selectedAllUsers}
                   indeterminate={selectedSomeUsers}
                   onChange={handleSelectAllUsers}
                 />
-              </TableCell>
+              </TableCell> */}
+              <TableCell>ID</TableCell>
               <TableCell>Full Name</TableCell>
               <TableCell>EMAIL</TableCell>
               <TableCell>PHONE</TableCell>
@@ -227,120 +174,177 @@ const UsersTable: FC<UsersTableProps> = ({ Users }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedUsers.map((User) => {
+            {paginatedUsers.map((customer) => {
               const isUserSelected = selectedUsers.includes(
-                User.id
+                customer.customer_id
               );
+
+              //confirm yes/no for delete
+              const submit = () => {
+                confirmAlert({
+                  title: 'Are you sure?',
+                  message: 'Are you sure to delete this Customer?',
+                  buttons: [
+                    {
+                      label: 'Yes',
+                      // neu co can chinh lai delete thi cop tu async xuong toi het trong ngoac cua label yes vao phan delete ben duoi
+                      onClick: async () => {
+                        deleteFunction({
+                          variables: {
+                            object: {
+                              active: false
+                            },
+                            where: {
+                              customer_id: {
+                                _eq: customer.customer_id
+                              }
+                            }
+                          }
+                        });
+                        alert('Successfully delete the Customer.');
+                        window.location.href="/dashboards/user";
+                      },
+                    },
+                    {
+                      label: 'No',
+                      onClick: () => close,
+                    }
+                  ]
+                });
+              };
+
+              //delete
+              const [deleteFunction, { data: deleteResult }] =
+                useDelCustomerMutation();
+              // const deleteCustomer = async () => {
+              //   deleteFunction({
+              //     variables: {
+              //       object: {
+              //         active: false
+              //       },
+              //       where: {
+              //         customer_id: {
+              //           _eq: customer.customer_id
+              //         }
+              //       }
+              //     }
+              //   });
+              // };
+              console.log(typeof deleteResult);
+
+              //update
+              const [update, { data: editResult }] =
+                useUpdateCustomerMutation();
+              const updateCustomer = () => {
+                navigate(`/dashboards/editcustomer/${customer.customer_id}`);
+              };
+              console.log(typeof editResult);
+
               return (
-                <TableRow
-                  hover
-                  key={User.id}
-                  selected={isUserSelected}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      color="primary"
-                      checked={isUserSelected}
-                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        handleSelectOneUser(event, User.id)
-                      }
-                      value={isUserSelected}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {User.fullName}
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {format(User.orderDate, 'MMMM dd yyyy')}
-                    </Typography> */}
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {User.email}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {User.phone}
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {User.sourceDesc}
-                    </Typography> */}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {User.address}
-                      {/* {User.cryptoCurrency} */}
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {numeral(User.amount).format(
-                        `${User.currency}0,0.00`
-                      )}
-                    </Typography> */}
-                  </TableCell>
-                  <TableCell align="right">
-                    {getStatusLabel(User.status)}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Tooltip title="Edit User" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.primary.lighter
-                          },
-                          color: theme.palette.primary.main
-                        }}
-                        color="inherit"
-                        size="small"
+                <>
+                  <TableRow
+                    hover
+                    key={customer.customer_id}
+                    selected={isUserSelected}
+                  >
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
                       >
-                        <EditTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete User" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': { background: theme.colors.error.lighter },
-                          color: theme.palette.error.main
-                        }}
-                        color="inherit"
-                        size="small"
+                        {customer.customer_id}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
                       >
-                        <DeleteTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
+                        {customer.fullname}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {customer.email}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {customer.phone}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {customer.address}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      {getStatusLabel(customer.active)}
+                    </TableCell>
+                    <TableCell align="right">
+                      {/* <Tooltip title="Edit User" arrow>
+      <IconButton
+        onClick={updateCustomer}
+        sx={{
+          '&:hover': {
+            background: theme.colors.primary.lighter
+          },
+          color: theme.palette.primary.main
+        }}
+        color="inherit"
+        size="small"
+      >
+        <EditTwoToneIcon fontSize="small" />
+      </IconButton>
+    </Tooltip> */}
+                      <Tooltip title="Delete User" arrow>
+                          <IconButton
+                            onClick={submit}
+                            sx={{
+                              '&:hover': {
+                                background: theme.colors.error.lighter
+                              },
+                              color: theme.palette.error.main
+                            }}
+                            color="inherit"
+                            size="small"
+                          >
+                            <DeleteTwoToneIcon fontSize="small" />
+                          </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                </>
               );
             })}
           </TableBody>
         </Table>
       </TableContainer>
-      <Box p={2}>
+      {/* <Box p={2}>
         <TablePagination
           component="div"
           count={filteredUsers.length}
@@ -350,17 +354,17 @@ const UsersTable: FC<UsersTableProps> = ({ Users }) => {
           rowsPerPage={limit}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
-      </Box>
+      </Box> */}
     </Card>
   );
 };
 
 UsersTable.propTypes = {
-  Users: PropTypes.array.isRequired
+  customers: PropTypes.array.isRequired
 };
 
 UsersTable.defaultProps = {
-  Users: []
+  customers: []
 };
 
 export default UsersTable;

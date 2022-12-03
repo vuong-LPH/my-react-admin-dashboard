@@ -1,0 +1,422 @@
+query GetCustomer($active: Boolean!) {
+  laundry_service_customers(where: { active: {_eq: $active}}) {
+    customer_id
+    fullname
+    email
+    phone
+    address
+    active
+  }
+}
+
+query GetCustomerById($id: Int!) {
+  laundry_service_customers(where: { customer_id: {_eq: $id}}) {
+    customer_id
+    fullname
+    email
+    phone
+    address
+    active
+  }
+}
+
+
+mutation createCustomer($object: laundry_service_customers_insert_input!) {
+  insert_laundry_service_customers_one(object: $object) {
+    fullname
+    email
+    phone
+    address
+    active
+  }
+}
+
+mutation delCustomer(
+  $object: laundry_service_customers_set_input!
+  $where: laundry_service_customers_bool_exp!
+  )
+  {
+  update_laundry_service_customers(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+mutation updateCustomer(
+  $object: laundry_service_customers_set_input!
+  $where: laundry_service_customers_bool_exp!
+  )
+  {
+  update_laundry_service_customers(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+query getAllService($status: Boolean!) {
+  laundry_service_service(where: { status: {_eq: $status}}) {
+    service_id
+    service_name
+    service_description
+    service_price
+    min_weight
+    max_weight
+    status
+  }
+}
+
+query GetServiceById($id: Int!) {
+  laundry_service_service(where: { service_id: {_eq: $id}}) {
+    service_id
+    service_name
+    service_description
+    service_price
+    min_weight
+    max_weight
+    status
+  }
+}
+
+mutation createService($object: laundry_service_service_insert_input!) {
+  insert_laundry_service_service_one(object: $object) {
+    service_name
+    service_description
+    service_price
+    min_weight
+    max_weight
+    status
+  }
+}
+
+mutation delService(
+  $object: laundry_service_service_set_input!
+  $where: laundry_service_service_bool_exp!
+  )
+  {
+  update_laundry_service_service(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+mutation updateService(
+  $object: laundry_service_service_set_input!
+  $where: laundry_service_service_bool_exp!
+  )
+  {
+  update_laundry_service_service(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+query getAllVoucher($status: Boolean!) {
+  laundry_service_voucher(where: { status: {_eq: $status}}) {
+    voucher_id
+    voucher_name
+    voucher_description
+    start_date
+    end_date
+    service_id
+    condition_weight
+    voucher_quantity
+    status
+  }
+}
+
+query GetVoucherById($id: Int!) {
+  laundry_service_voucher(where: { voucher_id: {_eq: $id}}) {
+    voucher_id
+    voucher_name
+    voucher_description
+    start_date
+    end_date
+    service_id
+    condition_weight
+    voucher_quantity
+    status
+  }
+}
+
+mutation createVoucher($object: laundry_service_voucher_insert_input!) {
+  insert_laundry_service_voucher_one(object: $object) {
+    voucher_name
+    voucher_description
+    start_date
+    end_date
+    service_id
+    condition_weight
+    voucher_quantity
+    status
+  }
+}
+
+mutation delVoucher(
+  $object: laundry_service_voucher_set_input!
+  $where: laundry_service_voucher_bool_exp!
+  )
+  {
+  update_laundry_service_voucher(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+mutation updateVoucher(
+  $object: laundry_service_voucher_set_input!
+  $where: laundry_service_voucher_bool_exp!
+  )
+  {
+  update_laundry_service_voucher(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+query getAllVendor($active: Boolean!) {
+    laundry_service_vendor(where: { active: {_eq: $active}}) {
+    vendor_id
+    vendor_name
+    phone
+    email
+    street
+    district
+    city
+    zip_code
+    active
+  }
+}
+
+query GetVendorById($id: Int!) {
+  laundry_service_vendor(where: { vendor_id: {_eq: $id}}) {
+    vendor_id
+    vendor_name
+    phone
+    email
+    street
+    district
+    city
+    zip_code
+    active
+  }
+}
+
+mutation createVendor($object: laundry_service_vendor_insert_input!) {
+  insert_laundry_service_vendor_one(object: $object) {
+    vendor_name
+    phone
+    email
+    street
+    district
+    city
+    zip_code
+    active
+  }
+}
+
+mutation delVendor(
+  $object: laundry_service_vendor_set_input!
+  $where: laundry_service_vendor_bool_exp!
+  )
+  {
+  update_laundry_service_vendor(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+mutation updateVendor(
+  $object: laundry_service_vendor_set_input!
+  $where: laundry_service_vendor_bool_exp!
+  )
+  {
+  update_laundry_service_vendor(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+query getAllProduct($status: Boolean!) {
+  laundry_service_product(where: { status: {_eq: $status}}) {
+    product_id
+    product_name
+    product_price
+    status
+  }
+}
+
+query GetProductById($id: Int!) {
+  laundry_service_product(where: { product_id: {_eq: $id}}) {
+    product_id
+    product_name
+    product_price
+    status
+  }
+}
+
+mutation createProduct($object: laundry_service_product_insert_input!) {
+  insert_laundry_service_product_one(object: $object) {
+    product_name
+    product_price
+    status
+  }
+}
+
+mutation delProduct(
+  $object: laundry_service_product_set_input!
+  $where: laundry_service_product_bool_exp!
+  )
+  {
+  update_laundry_service_product(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+mutation updateProduct(
+  $object: laundry_service_product_set_input!
+  $where: laundry_service_product_bool_exp!
+  )
+  {
+  update_laundry_service_product(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+query getAllTransaction {
+  laundry_service_transaction {
+    transaction_id
+    order_id
+    payment_id
+    transaction_date
+  }
+}
+
+query getAllPaymentMethod($active: Boolean!) {
+  laundry_service_payment(where: { active: {_eq: $active}}) {
+    payment_id
+    payment_type
+    active
+  }
+}
+
+mutation createPayment($object: laundry_service_payment_insert_input!) {
+  insert_laundry_service_payment_one(object: $object) {
+  payment_type
+  active
+  }
+}
+
+mutation delPayment(
+  $object: laundry_service_payment_set_input!
+  $where: laundry_service_payment_bool_exp!
+  )
+  {
+  update_laundry_service_payment(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+query getAllManager($active: Boolean!) {
+    laundry_service_manager(where: { active: {_eq: $active}}) {
+    manager_id
+    fullname
+    email
+    password
+    phone
+    active
+    vendor_id
+  }
+}
+
+query GetManagerById($id: Int!) {
+  laundry_service_manager(where: { manager_id: {_eq: $id}}) {
+    manager_id
+    fullname
+    email
+    phone
+    password
+    vendor_id
+    active
+  }
+}
+
+mutation createManager($object: laundry_service_manager_insert_input!) {
+  insert_laundry_service_manager_one(object: $object) {
+    fullname
+    email
+    password
+    phone
+    active
+    vendor_id
+  }
+}
+
+mutation delManager(
+  $object: laundry_service_manager_set_input!
+  $where: laundry_service_manager_bool_exp!
+  )
+  {
+  update_laundry_service_manager(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+mutation updateManager(
+  $object: laundry_service_manager_set_input!
+  $where: laundry_service_manager_bool_exp!
+  )
+  {
+  update_laundry_service_manager(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+query getAllStaff($working_status: Boolean!) {
+    laundry_service_staff(where: { working_status: {_eq: $working_status}}) {
+    staff_id
+    staff_role
+    fullname
+    email
+    phone
+    working_status
+    manager_id
+    vendor_id
+  }
+}
+
+mutation createStaff($object: laundry_service_staff_insert_input!) {
+  insert_laundry_service_staff_one(object: $object) {
+    staff_role
+    fullname
+    email
+    phone
+    working_status
+    manager_id
+    vendor_id
+  }
+}
+
+mutation delStaff(
+  $object: laundry_service_staff_set_input!
+  $where: laundry_service_staff_bool_exp!
+  )
+  {
+  update_laundry_service_staff(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+mutation updateStaff(
+  $object: laundry_service_staff_set_input!
+  $where: laundry_service_staff_bool_exp!
+  )
+  {
+  update_laundry_service_staff(_set: $object, where: $where) {
+    affected_rows
+  }
+}
+
+query GetStaffById($id: Int!) {
+  laundry_service_staff(where: { staff_id: {_eq: $id}}) {
+    staff_id
+    fullname
+    email
+    phone
+    staff_role
+    manager_id
+    vendor_id
+    working_status
+  }
+}

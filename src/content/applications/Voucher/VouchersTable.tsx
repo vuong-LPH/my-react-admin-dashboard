@@ -26,10 +26,16 @@ import {
 } from '@mui/material';
 
 import Label from 'src/components/Label';
-import { Voucher, VoucherStatus } from 'src/models/voucher';
+// import { Voucher, VoucherStatus } from 'src/models/voucher';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import BulkActions from './BulkActions';
+import { Voucher } from './Vouchers';
+import { useDelVoucherMutation, useUpdateVoucherMutation } from 'src/generated';
+import { useNavigate } from 'react-router-dom';
+import { confirmAlert } from 'react-confirm-alert';
+// import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { render } from 'react-dom';
 
 interface VouchersTableProps {
   className?: string;
@@ -37,40 +43,46 @@ interface VouchersTableProps {
 }
 
 interface Filters {
-  status?: VoucherStatus;
+  status?: boolean;
 }
 
-const getStatusLabel = (VoucherStatus: VoucherStatus): JSX.Element => {
-  const map = {
-    failed: {
-      text: 'Failed',
-      color: 'error'
-    },
-    completed: {
-      text: 'Completed',
-      color: 'success'
-    },
-    pending: {
-      text: 'Pending',
-      color: 'warning'
-    }
-  };
-
-  const { text, color }: any = map[VoucherStatus];
-
-  return <Label color={color}>{text}</Label>;
+const getStatusLabel = (VoucherStatus: boolean): JSX.Element => {
+  const { text, color } = VoucherStatus
+    ? {
+        text: 'Failed',
+        color: 'error'
+      }
+    : {
+        text: 'Completed',
+        color: 'success'
+      };
+  return <label color={color}>{text}</label>;
 };
 
-const applyFilters = (
-  Vouchers: Voucher[],
-  filters: Filters
-): Voucher[] => {
+// const getStatusLabel = (VoucherStatus: boolean): JSX.Element => {
+//   const map = {
+//     failed: {
+//       text: 'Failed',
+//       color: 'error'
+//     },
+//     completed: {
+//       text: 'Completed',
+//       color: 'success'
+//     },
+//     pending: {
+//       text: 'Pending',
+//       color: 'warning'
+//     }
+//   };
+
+//   const { text, color }: any = map[VoucherStatus];
+
+//   return <Label color={color}>{text}</Label>;
+// };
+
+const applyFilters = (Vouchers: Voucher[], filters: Filters): Voucher[] => {
   return Vouchers.filter((Voucher) => {
     let matches = true;
-
-    // if (filters.status && Voucher.status !== filters.status) {
-    //   matches = false;
-    // }
 
     return matches;
   });
@@ -85,34 +97,31 @@ const applyPagination = (
 };
 
 const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
-  const [selectedVouchers, setSelectedVouchers] = useState<string[]>(
-    []
-  );
-  const selectedBulkActions = selectedVouchers.length > 0;
+  const [selectedVouchers, setSelectedVouchers] = useState<number[]>([]);
   const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(5);
+  const [limit, setLimit] = useState<number>(9999);
   const [filters, setFilters] = useState<Filters>({
     status: null
   });
 
-  const statusOptions = [
-    {
-      id: 'all',
-      name: 'All'
-    },
-    {
-      id: 'completed',
-      name: 'Completed'
-    },
-    {
-      id: 'pending',
-      name: 'Pending'
-    },
-    {
-      id: 'failed',
-      name: 'Failed'
-    }
-  ];
+  // const statusOptions = [
+  //   {
+  //     id: 'all',
+  //     name: 'All'
+  //   },
+  //   {
+  //     id: 'completed',
+  //     name: 'Completed'
+  //   },
+  //   {
+  //     id: 'pending',
+  //     name: 'Pending'
+  //   },
+  //   {
+  //     id: 'failed',
+  //     name: 'Failed'
+  //   }
+  // ];
 
   const handleStatusChange = (e: ChangeEvent<HTMLInputElement>): void => {
     let value = null;
@@ -130,26 +139,26 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
   const handleSelectAllVouchers = (
     event: ChangeEvent<HTMLInputElement>
   ): void => {
-    setSelectedVouchers(
-      event.target.checked
-        ? Vouchers.map((Voucher) => Voucher.id)
-        : []
-    );
+    // setSelectedVouchers(
+    //   event.target.checked
+    //     ? Vouchers.map((Voucher) => Voucher.voucher_id)
+    //     : []
+    // );
   };
 
   const handleSelectOneVoucher = (
     event: ChangeEvent<HTMLInputElement>,
-    VoucherId: string
+    VoucherId: number
   ): void => {
     if (!selectedVouchers.includes(VoucherId)) {
-      setSelectedVouchers((prevSelected) => [
-        ...prevSelected,
-        VoucherId
-      ]);
+      //   // setSelectedVouchers((prevSelected) => [
+      //   //   ...prevSelected,
+      //   //   VoucherId
+      //   // ]);
     } else {
-      setSelectedVouchers((prevSelected) =>
-        prevSelected.filter((id) => id !== VoucherId)
-      );
+      // setSelectedVouchers((prevSelected) =>
+      //   prevSelected.filter((id) => id !== VoucherId)
+      // );
     }
   };
 
@@ -162,68 +171,29 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
   };
 
   const filteredVouchers = applyFilters(Vouchers, filters);
-  const paginatedVouchers = applyPagination(
-    filteredVouchers,
-    page,
-    limit
-  );
+  const paginatedVouchers = applyPagination(filteredVouchers, page, limit);
   const selectedSomeVouchers =
-    selectedVouchers.length > 0 &&
-    selectedVouchers.length < Vouchers.length;
-  const selectedAllVouchers =
-    selectedVouchers.length === Vouchers.length;
+    selectedVouchers.length > 0 && selectedVouchers.length < Vouchers.length;
+  const selectedAllVouchers = selectedVouchers.length === Vouchers.length;
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Card>
-      {selectedBulkActions && (
-        <Box flex={1} p={2}>
-          <BulkActions /> {/* sau khi click chon tat ca thi moi thay duoc chuc nang cua bulkAction */}
-        </Box>
-      )} 
-      {!selectedBulkActions && (
-        <CardHeader
-          // action={
-          //   <Box width={150}>
-          //     <FormControl fullWidth variant="outlined">
-          //       <InputLabel>Status</InputLabel>
-          //       <Select
-          //         value={filters.status || 'all'}
-          //         onChange={handleStatusChange}
-          //         label="Status"
-          //         autoWidth
-          //       >
-          //         {statusOptions.map((statusOption) => (
-          //           <MenuItem key={statusOption.id} value={statusOption.id}>
-          //             {statusOption.name}
-          //           </MenuItem>
-          //         ))}
-          //       </Select>
-          //     </FormControl>
-          //   </Box>
-          // }
-          title="Vouchers"
-        />
-      )}
+      <CardHeader title="Vouchers" />
       <Divider />
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  color="primary"
-                  checked={selectedAllVouchers}
-                  indeterminate={selectedSomeVouchers}
-                  onChange={handleSelectAllVouchers}
-                />
-              </TableCell>
+              <TableCell>ID</TableCell>
               <TableCell>VOUCHER</TableCell>
               <TableCell>DESCRIPTION</TableCell>
               <TableCell>START DATE</TableCell>
               <TableCell>END DATE</TableCell>
               <TableCell align="right">SERVICE SUPPORT</TableCell>
               <TableCell align="right">CONDITION</TableCell>
+              <TableCell align="right">STATUS</TableCell>
               <TableCell align="right">QUANTITY</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -231,23 +201,85 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
           <TableBody>
             {paginatedVouchers.map((Voucher) => {
               const isVoucherSelected = selectedVouchers.includes(
-                Voucher.id
+                Voucher.voucher_id
               );
+
+              //confirm yes/no for delete
+              const submit = () => {
+                confirmAlert({
+                  title: 'Are you sure?',
+                  message: 'Are you sure to delete this Voucher?',
+                  buttons: [
+                    {
+                      label: 'Yes',
+                      // neu co can chinh lai delete thi cop tu async xuong toi het trong ngoac cua label yes vao phan delete ben duoi
+                      onClick: async () => {
+                        deleteFunction({
+                          variables: {
+                            object: {
+                              status: false
+                            },
+                            where: {
+                              voucher_id: {
+                                _eq: Voucher.voucher_id
+                              }
+                            }
+                          }
+                        });
+                        alert('Successfully delete the Voucher.');
+                        window.location.href = '/dashboards/voucher';
+                      }
+                    },
+                    {
+                      label: 'No',
+                      onClick: () => close
+                    }
+                  ]
+                });
+              };
+
+              //delete
+              const [deleteFunction, { data: deleteResult }] =
+                useDelVoucherMutation();
+              // const deleteVoucher = async () => {
+              //   deleteFunction({
+              //     variables: {
+              //       object: {
+              //         status: false
+              //       },
+              //       where: {
+              //         voucher_id: {
+              //           _eq: Voucher.voucher_id
+              //         }
+              //       }
+              //     }
+              //   });
+              // };
+              console.log(typeof deleteResult);
+
+              //update
+              const [update, { data: editResult }] = useUpdateVoucherMutation();
+              const updateVoucher = () => {
+                navigate(`/dashboards/editvoucher/${Voucher.voucher_id}`);
+              };
+              console.log(typeof editResult);
+
               return (
                 <TableRow
                   hover
-                  key={Voucher.id}
+                  key={Voucher.voucher_id}
                   selected={isVoucherSelected}
                 >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      color="primary"
-                      checked={isVoucherSelected}
-                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        handleSelectOneVoucher(event, Voucher.id)
-                      }
-                      value={isVoucherSelected}
-                    />
+                  <TableCell>
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {Voucher.voucher_id}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography
@@ -257,11 +289,8 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
                       gutterBottom
                       noWrap
                     >
-                      {Voucher.voucher}
+                      {Voucher.voucher_name}
                     </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {format(Voucher.orderDate, 'MMMM dd yyyy')}
-                    </Typography> */}
                   </TableCell>
                   <TableCell>
                     <Typography
@@ -271,17 +300,29 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
                       gutterBottom
                       noWrap
                     >
-                      {Voucher.description}
+                      {Voucher.voucher_description}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {format(Voucher.startDate, 'MMMM dd yyyy')}
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {Voucher.start_date}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {format(Voucher.endDate, 'MMMM dd yyyy')}
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {Voucher.end_date}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
@@ -292,11 +333,8 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
                       gutterBottom
                       noWrap
                     >
-                      {Voucher.serviceSupport}
+                      {Voucher.service_id}
                     </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {Voucher.sourceDesc}
-                    </Typography> */}
                   </TableCell>
                   <TableCell align="right">
                     <Typography
@@ -306,38 +344,27 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
                       gutterBottom
                       noWrap
                     >
-                      {Voucher.condition}
-                      {/* {Voucher.cryptoCurrency} */}
+                      {Voucher.condition_weight}
                     </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {numeral(Voucher.amount).format(
-                        `${Voucher.currency}0,0.00`
-                      )}
-                    </Typography> */}
                   </TableCell>
                   <TableCell align="right">
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {Voucher.quantity}
-                      {/* {Voucher.cryptoCurrency} */}
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {numeral(Voucher.amount).format(
-                        `${Voucher.currency}0,0.00`
-                      )}
-                    </Typography> */}
-                  </TableCell>
-                  {/* <TableCell align="right">
                     {getStatusLabel(Voucher.status)}
-                  </TableCell> */}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {Voucher.voucher_quantity}
+                    </Typography>
+                  </TableCell>
                   <TableCell align="right">
                     <Tooltip title="Edit Voucher" arrow>
                       <IconButton
+                        onClick={updateVoucher}
                         sx={{
                           '&:hover': {
                             background: theme.colors.primary.lighter
@@ -352,8 +379,11 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
                     </Tooltip>
                     <Tooltip title="Delete Voucher" arrow>
                       <IconButton
+                        onClick={submit}
                         sx={{
-                          '&:hover': { background: theme.colors.error.lighter },
+                          '&:hover': {
+                            background: theme.colors.error.lighter
+                          },
                           color: theme.palette.error.main
                         }}
                         color="inherit"
@@ -369,7 +399,7 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box p={2}>
+      {/* <Box p={2}>
         <TablePagination
           component="div"
           count={filteredVouchers.length}
@@ -379,7 +409,7 @@ const VouchersTable: FC<VouchersTableProps> = ({ Vouchers }) => {
           rowsPerPage={limit}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
-      </Box>
+      </Box> */}
     </Card>
   );
 };

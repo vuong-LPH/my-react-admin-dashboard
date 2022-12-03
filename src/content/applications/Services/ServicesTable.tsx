@@ -26,10 +26,15 @@ import {
 } from '@mui/material';
 
 import Label from 'src/components/Label';
-import { Service, ServiceStatus } from 'src/models/service';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import BulkActions from './BulkActions';
+import { Service } from './Services';
+import { useDelServiceMutation, useUpdateServiceMutation } from 'src/generated';
+import { useNavigate } from 'react-router-dom';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { render } from 'react-dom';
+// import { useDeleteServiceMutation } from 'src/generated';
 
 interface ServicesTableProps {
   className?: string;
@@ -37,40 +42,25 @@ interface ServicesTableProps {
 }
 
 interface Filters {
-  status?: ServiceStatus;
+  status?: boolean;
 }
 
-// const getStatusLabel = (Servicestatus: Servicestatus): JSX.Element => {
-//   const map = {
-//     failed: {
-//       text: 'Failed',
-//       color: 'error'
-//     },
-//     completed: {
-//       text: 'Completed',
-//       color: 'success'
-//     },
-//     pending: {
-//       text: 'Pending',
-//       color: 'warning'
-//     }
-//   };
+const getStatusLabel = (ServiceStatus: boolean): JSX.Element => {
+  const { text, color } = ServiceStatus
+    ? {
+        text: 'Available',
+        color: 'success'
+      }
+    : {
+        text: 'Not Available',
+        color: 'error'
+      };
+  return <label color={color}>{text}</label>;
+};
 
-//   const { text, color }: any = map[Servicestatus];
-
-//   return <Label color={color}>{text}</Label>;
-// };
-
-const applyFilters = (
-  Services: Service[],
-  filters: Filters
-): Service[] => {
+const applyFilters = (Services: Service[], filters: Filters): Service[] => {
   return Services.filter((Service) => {
     let matches = true;
-
-    // if (filters.status && Service.status !== filters.status) {
-    //   matches = false;
-    // }
 
     return matches;
   });
@@ -85,67 +75,32 @@ const applyPagination = (
 };
 
 const ServicesTable: FC<ServicesTableProps> = ({ Services }) => {
-  const [selectedServices, setSelectedServices] = useState<string[]>(
-    []
-  );
-  const selectedBulkActions = selectedServices.length > 0;
+  const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(5);
+  const [limit, setLimit] = useState<number>(9999);
   const [filters, setFilters] = useState<Filters>({
     status: null
   });
 
-  // const statusOptions = [
-  //   {
-  //     id: 'all',
-  //     name: 'All'
-  //   },
-  //   {
-  //     id: 'completed',
-  //     name: 'Completed'
-  //   },
-  //   {
-  //     id: 'pending',
-  //     name: 'Pending'
-  //   },
-  //   {
-  //     id: 'failed',
-  //     name: 'Failed'
-  //   }
-  // ];
-
-  // const handleStatusChange = (e: ChangeEvent<HTMLInputElement>): void => {
-  //   let value = null;
-
-  //   if (e.target.value !== 'all') {
-  //     value = e.target.value;
-  //   }
-
-  //   setFilters((prevFilters) => ({
-  //     ...prevFilters,
-  //     status: value
-  //   }));
-  // };
-
   const handleSelectAllServices = (
     event: ChangeEvent<HTMLInputElement>
   ): void => {
-    setSelectedServices(
-      event.target.checked
-        ? Services.map((Service) => Service.id)
-        : []
-    );
+    // setSelectedServices(
+    //   event.target.checked
+    //     ? Services.map((Service) => Service.service_id)
+    //     : []
+    // );
   };
 
   const handleSelectOneService = (
     event: ChangeEvent<HTMLInputElement>,
-    ServiceId: string
+    ServiceId: number
   ): void => {
     if (!selectedServices.includes(ServiceId)) {
-      setSelectedServices((prevSelected) => [
-        ...prevSelected,
-        ServiceId
-      ]);
+      // setSelectedServices((prevSelected) => [
+      //   ...prevSelected,
+      //   ServiceId
+      // ]);
     } else {
       setSelectedServices((prevSelected) =>
         prevSelected.filter((id) => id !== ServiceId)
@@ -162,91 +117,103 @@ const ServicesTable: FC<ServicesTableProps> = ({ Services }) => {
   };
 
   const filteredServices = applyFilters(Services, filters);
-  const paginatedServices = applyPagination(
-    filteredServices,
-    page,
-    limit
-  );
+  const paginatedServices = applyPagination(filteredServices, page, limit);
   const selectedSomeServices =
-    selectedServices.length > 0 &&
-    selectedServices.length < Services.length;
-  const selectedAllServices =
-    selectedServices.length === Services.length;
+    selectedServices.length > 0 && selectedServices.length < Services.length;
+  const selectedAllServices = selectedServices.length === Services.length;
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Card>
-      {selectedBulkActions && (
-        <Box flex={1} p={2}>
-          <BulkActions /> {/* sau khi click chon tat ca thi moi thay duoc chuc nang cua bulkAction */}
-        </Box>
-      )} 
-      {!selectedBulkActions && (
-        <CardHeader
-          // action={
-          //   <Box width={150}>
-          //     <FormControl fullWidth variant="outlined">
-          //       <InputLabel>Status</InputLabel>
-          //       <Select
-          //         value={filters.status || 'all'}
-          //         onChange={handleStatusChange}
-          //         label="Status"
-          //         autoWidth
-          //       >
-          //         {statusOptions.map((statusOption) => (
-          //           <MenuItem key={statusOption.id} value={statusOption.id}>
-          //             {statusOption.name}
-          //           </MenuItem>
-          //         ))}
-          //       </Select>
-          //     </FormControl>
-          //   </Box>
-          // }
-          title="Services"
-        />
-      )}
+      <CardHeader title="Services" />
       <Divider />
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  color="primary"
-                  checked={selectedAllServices}
-                  indeterminate={selectedSomeServices}
-                  onChange={handleSelectAllServices}
-                />
-              </TableCell>
+              <TableCell>ID</TableCell>
               <TableCell>SERVICE</TableCell>
               <TableCell>DESCRIPTION</TableCell>
               <TableCell>PRICE</TableCell>
-              {/* <TableCell align="right">ADDRESS</TableCell>
-              <TableCell align="right">Status</TableCell> */}
+              <TableCell align="right">MIN WEIGHT</TableCell>
+              <TableCell align="right">MAX WEIGHT</TableCell>
+              <TableCell align="right">Status</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {paginatedServices.map((Service) => {
               const isServiceselected = selectedServices.includes(
-                Service.id
+                Service.service_id
               );
+
+              //confirm yes/no for delete
+              const submit = () => {
+                confirmAlert({
+                  title: 'Are you sure?',
+                  message: 'Are you sure to delete this service?',
+                  buttons: [
+                    {
+                      label: 'Yes',
+                      // neu co can chinh lai delete thi cop tu async xuong toi het trong ngoac cua label yes vao phan delete ben duoi
+                      onClick: async () => {
+                        deleteFunction({
+                          variables: {
+                            object: {
+                              status: false
+                            },
+                            where: {
+                              service_id: {
+                                _eq: Service.service_id
+                              }
+                            }
+                          }
+                        });
+                        alert('Successfully delete the Service.');
+                        window.location.href="/dashboards/service";
+                      },
+                    },
+                    {
+                      label: 'No',
+                      onClick: () => close,
+                    }
+                  ]
+                });
+              };
+
+              //delete
+              const [deleteFunction, { data: deleteResult }] =
+                useDelServiceMutation();
+              // const deleteService = async () => {
+              //   deleteFunction({
+              //     variables: {
+              //       object: {
+              //         status: false
+              //       },
+              //       where: {
+              //         service_id: {
+              //           _eq: Service.service_id
+              //         }
+              //       }
+              //     }
+              //   });
+              // };
+              console.log(typeof deleteResult);
+
+              //update
+              const [update, { data: editResult }] = useUpdateServiceMutation();
+              const updateService = () => {
+                navigate(`/dashboards/editservice/${Service.service_id}`);
+              };
+              console.log(typeof editResult);
+
               return (
                 <TableRow
                   hover
-                  key={Service.id}
+                  key={Service.service_id}
                   selected={isServiceselected}
                 >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      color="primary"
-                      checked={isServiceselected}
-                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        handleSelectOneService(event, Service.id)
-                      }
-                      value={isServiceselected}
-                    />
-                  </TableCell>
                   <TableCell>
                     <Typography
                       variant="body1"
@@ -255,21 +222,7 @@ const ServicesTable: FC<ServicesTableProps> = ({ Services }) => {
                       gutterBottom
                       noWrap
                     >
-                      {Service.service}
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {format(Service.orderDate, 'MMMM dd yyyy')}
-                    </Typography> */}
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {Service.description}
+                      {Service.service_id}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -280,13 +233,10 @@ const ServicesTable: FC<ServicesTableProps> = ({ Services }) => {
                       gutterBottom
                       noWrap
                     >
-                      {Service.price}
+                      {Service.service_name}
                     </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {Service.sourceDesc}
-                    </Typography> */}
                   </TableCell>
-                  {/* <TableCell align="right">
+                  <TableCell>
                     <Typography
                       variant="body1"
                       fontWeight="bold"
@@ -294,21 +244,49 @@ const ServicesTable: FC<ServicesTableProps> = ({ Services }) => {
                       gutterBottom
                       noWrap
                     >
-                      {Service.address}
-                      {Service.cryptoCurrency}
+                      {Service.service_description}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {numeral(Service.amount).format(
-                        `${Service.currency}0,0.00`
-                      )}
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {Service.service_price}
                     </Typography>
-                  </TableCell> */}
-                  {/* <TableCell align="right">
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {Service.min_weight}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {Service.max_weight}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
                     {getStatusLabel(Service.status)}
-                  </TableCell> */}
+                  </TableCell>
                   <TableCell align="right">
                     <Tooltip title="Edit Service" arrow>
                       <IconButton
+                        onClick={updateService}
                         sx={{
                           '&:hover': {
                             background: theme.colors.primary.lighter
@@ -323,8 +301,11 @@ const ServicesTable: FC<ServicesTableProps> = ({ Services }) => {
                     </Tooltip>
                     <Tooltip title="Delete Service" arrow>
                       <IconButton
+                        onClick={submit}
                         sx={{
-                          '&:hover': { background: theme.colors.error.lighter },
+                          '&:hover': {
+                            background: theme.colors.error.lighter
+                          },
                           color: theme.palette.error.main
                         }}
                         color="inherit"
@@ -340,7 +321,7 @@ const ServicesTable: FC<ServicesTableProps> = ({ Services }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box p={2}>
+      {/* <Box p={2}>
         <TablePagination
           component="div"
           count={filteredServices.length}
@@ -350,7 +331,7 @@ const ServicesTable: FC<ServicesTableProps> = ({ Services }) => {
           rowsPerPage={limit}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
-      </Box>
+      </Box> */}
     </Card>
   );
 };

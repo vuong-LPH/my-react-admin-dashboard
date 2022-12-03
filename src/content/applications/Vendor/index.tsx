@@ -1,19 +1,26 @@
 import { Helmet } from 'react-helmet-async';
-// import PageHeader from './PageHeader';
+import PageHeader from './PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import { Grid, Container } from '@mui/material';
 import Footer from 'src/components/Footer';
 
-// import RecentOrders from './RecentOrders';
+import Vendors from './Vendors';
+import { useGetAllVendorQuery } from 'src/generated';
 
 function ApplicationsVendor() {
+  const { data, loading } = useGetAllVendorQuery({
+    variables: { active: true }
+  });
+
+  if (loading) return <div>Loading...</div>;
+  console.log({data})
   return (
     <>
       <Helmet>
         <title>Vendor - Management</title>
       </Helmet>
       <PageTitleWrapper>
-        {/* <PageHeader /> */}
+        <PageHeader />
       </PageTitleWrapper>
       <Container maxWidth="lg">
         <Grid
@@ -24,7 +31,7 @@ function ApplicationsVendor() {
           spacing={3}
         >
           <Grid item xs={12}>
-            {/* <RecentOrders /> */}
+            {data && <Vendors vendors={data.laundry_service_vendor}/>}
           </Grid>
         </Grid>
       </Container>

@@ -148,7 +148,7 @@ function HeaderSearch() {
               </Link>
             </Box>
             <Divider sx={{ my: 1 }} />
-            <List disablePadding>
+            {/* <List disablePadding>
               <ListItem button>
                 <Hidden smDown>
                   <ListItemAvatar>
@@ -264,7 +264,7 @@ function HeaderSearch() {
                 </Box>
                 <ChevronRightTwoToneIcon />
               </ListItem>
-            </List>
+            </List> */}
             <Divider sx={{ mt: 1, mb: 2 }} />
             <Box sx={{ textAlign: 'center' }}>
               <Button color="primary">View all search results</Button>

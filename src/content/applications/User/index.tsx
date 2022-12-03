@@ -5,8 +5,15 @@ import { Grid, Container } from '@mui/material';
 import Footer from 'src/components/Footer';
 
 import Users from './Users';
+import { useGetCustomerQuery } from 'src/generated';
 
 function ApplicationsUser() {
+  const { data, loading } = useGetCustomerQuery({
+    variables: { active: true }
+  });
+
+  if (loading) return <div>Loading...</div>;
+  console.log({data})
   return (
     <>
       <Helmet>
@@ -24,7 +31,7 @@ function ApplicationsUser() {
           spacing={3}
         >
           <Grid item xs={12}>
-            <Users />
+            {data && <Users users={data.laundry_service_customers}/>}
           </Grid>
         </Grid>
       </Container>

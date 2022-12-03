@@ -2,7 +2,6 @@ export type VoucherStatus = 'completed' | 'pending' | 'failed';
 
 export interface Voucher {
   id: string;
-//   status: ServiceStatus;
   voucher: string;
   description: string;
   startDate: number;
@@ -10,5 +9,4 @@ export interface Voucher {
   serviceSupport: string;
   condition: string;
   quantity: number;
-//   address: string;
 }

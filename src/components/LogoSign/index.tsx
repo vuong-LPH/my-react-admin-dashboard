@@ -8,12 +8,14 @@ import {
   useTheme
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import logo from 'src/components/Image/logo.png';
 
 const LogoWrapper = styled(Link)(
   ({ theme }) => `
         color: ${theme.palette.text.primary};
         display: flex;
         text-decoration: none;
+        height: 30px;
         width: 53px;
         margin: 0 auto;
         font-weight: ${theme.typography.fontWeightBold};
@@ -99,28 +101,13 @@ function Logo() {
 
   return (
     <TooltipWrapper
-      title="Tokyo Free White React Typescript Admin Dashboard"
+      title="Admin Dashboard Laundry Service"
       arrow
     >
-      <LogoWrapper to="/overview">
-        <Badge
-          sx={{
-            '.MuiBadge-badge': {
-              fontSize: theme.typography.pxToRem(11),
-              right: -2,
-              top: 8
-            }
-          }}
-          overlap="circular"
-          color="success"
-          badgeContent="2.0"
-        >
-          <LogoSignWrapper>
-            <LogoSign>
-              <LogoSignInner />
-            </LogoSign>
-          </LogoSignWrapper>
-        </Badge>
+      <LogoWrapper to="/dashboards/dashboard">
+        <div className='imageWrapper'>
+        <img src={logo} alt="Image" height={55}/>
+        </div>
       </LogoWrapper>
     </TooltipWrapper>
   );

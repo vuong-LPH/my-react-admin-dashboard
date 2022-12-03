@@ -1,10 +1,10 @@
 import { Helmet } from 'react-helmet-async';
-// import PageHeader from './PageHeader';
+import PageHeader from './PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import { Grid, Container } from '@mui/material';
 import Footer from 'src/components/Footer';
 
-// import RecentOrders from './RecentOrders';
+import Transactions from './Transactions';
 
 function ApplicationsTrans() {
   return (
@@ -13,7 +13,7 @@ function ApplicationsTrans() {
         <title>Transaction - Management</title>
       </Helmet>
       <PageTitleWrapper>
-        {/* <PageHeader /> */}
+        <PageHeader />
       </PageTitleWrapper>
       <Container maxWidth="lg">
         <Grid
@@ -24,7 +24,7 @@ function ApplicationsTrans() {
           spacing={3}
         >
           <Grid item xs={12}>
-            {/* <RecentOrders /> */}
+            <Transactions />
           </Grid>
         </Grid>
       </Container>
