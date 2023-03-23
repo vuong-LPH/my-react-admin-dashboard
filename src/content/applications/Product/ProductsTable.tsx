@@ -49,12 +49,12 @@ interface Filters {
 const getStatusLabel = (ProductStatus: boolean): JSX.Element => {
   const { text, color } = ProductStatus
     ? {
-        text: 'Failed',
-        color: 'error'
+        text: 'Support',
+        color: 'success'
       }
     : {
-        text: 'Completed',
-        color: 'success'
+        text: 'Not Support',
+        color: 'error'
       };
   return <label color={color}>{text}</label>;
 };
@@ -137,7 +137,7 @@ const ProductsTable: FC<ProductsTableProps> = ({ Products }) => {
               <TableCell>Product</TableCell>
               <TableCell>PRICE</TableCell>
               <TableCell align="right">STATUS</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell align="right">ACTIONS</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

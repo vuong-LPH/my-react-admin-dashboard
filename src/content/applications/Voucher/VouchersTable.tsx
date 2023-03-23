@@ -49,12 +49,12 @@ interface Filters {
 const getStatusLabel = (VoucherStatus: boolean): JSX.Element => {
   const { text, color } = VoucherStatus
     ? {
-        text: 'Failed',
-        color: 'error'
+        text: 'Available',
+        color: 'success'
       }
     : {
-        text: 'Completed',
-        color: 'success'
+        text: 'Not Available',
+        color: 'error'
       };
   return <label color={color}>{text}</label>;
 };

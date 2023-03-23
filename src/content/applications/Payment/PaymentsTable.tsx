@@ -51,12 +51,12 @@ interface Filters {
 const getStatusLabel = (PaymentStatus: boolean): JSX.Element => {
   const { text, color } = PaymentStatus
     ? {
-        text: 'Failed',
-        color: 'error'
+        text: 'Supported',
+        color: 'success'
       }
     : {
-        text: 'Completed',
-        color: 'success'
+        text: 'Not Supported',
+        color: 'error'
       };
   return <label color={color}>{text}</label>;
 };

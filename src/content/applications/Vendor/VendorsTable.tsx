@@ -50,12 +50,12 @@ interface Filters {
 const getStatusLabel = (VendorStatus: boolean): JSX.Element => {
   const { text, color } = VendorStatus
     ? {
-        text: 'Failed',
-        color: 'error'
+        text: 'Working',
+        color: 'success'
       }
     : {
-        text: 'Completed',
-        color: 'success'
+        text: 'Stop Working',
+        color: 'error'
       };
   return <label color={color}>{text}</label>;
 };
